@@ -1,18 +1,23 @@
 // Fetch json and preprocess data
 const url =
-  "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json";
+  "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json";
 
-d3.json(url).then((dataset) => {
-  dataset.data.forEach((d) => {
-    d[0] = new Date(d[0] + "T00:00");
+d3.json(url).then((data) => {
+  data.forEach((d) => {
+    d["Year"] = new Date(d["Year"] + "T00:00");
+    d["Time"] = parseTime(d["Time"]);
   });
-  render(dataset);
+  render(data);
 });
+
+const parseTime = d3.timeParse("%M:%S");
+const formatTime = d3.timeFormat("%M:%S");
+const formatYear = d3.timeFormat("%Y");
 
 // SVG layout setup
 const width = 600;
 const height = 300;
-const margin = { top: 30, right: 10, bottom: 30, left: 20 };
+const margin = { top: 30, right: 20, bottom: 35, left: 50 };
 
 const svg = d3
   .select("#chart")
@@ -26,55 +31,36 @@ const tooltip = d3
   .style("opacity", 0);
 
 // Render function
-const render = (dataset) => {
-  const xValue = (d) => d[0];
-
-  const yValue = (d) => d[1];
-
-  const bandwidth = width / dataset.data.length;
+const render = (data) => {
+  const xValue = (d) => d["Year"];
+  const yValue = (d) => d["Time"];
 
   const xScale = d3
     .scaleTime()
-    .domain(d3.extent(dataset.data, xValue))
-    .range([margin.left, width - margin.right - bandwidth]);
+    .domain([new Date("1993" + "T00:00"), new Date("2016" + "T00:00")])
+    .range([margin.left, width - margin.right]);
 
   const yScale = d3
-    .scaleLinear()
-    .domain([0, d3.max(dataset.data, yValue)])
+    .scaleTime()
+    .domain([new Date("1900" + "T00:36:35"), new Date("1900" + "T00:39:50")])
     .range([height - margin.bottom, margin.top]);
 
   // Axes setup
-  const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y")).ticks(5);
+  const xAxis = d3.axisBottom(xScale);
+  const xAxisLabel = "Year";
 
-  const yAxis = d3
-    .axisRight(yScale)
-    .tickSize(width - margin.right - margin.left);
-
-  const yAxisLabel = "Gross Domestic Product";
-
-  const customXAxis = (g) => {
-    g.call(xAxis);
-    g.select(".domain").remove();
-  };
-
-  const customYAxis = (g) => {
-    g.call(yAxis);
-    g.select(".domain").remove();
-    g.selectAll(".tick:not(:first-of-type) line")
-      .attr("stroke", "#777")
-      .attr("stroke-dasharray", "2,2");
-    g.selectAll(".tick text").attr("x", 4).attr("dy", -4);
-  };
+  const yAxis = d3.axisLeft(yScale).tickFormat(formatTime);
+  const yAxisLabel = "Time";
 
   // Time and gdp formatters
-  const formatTimeDate = d3.timeFormat("%Y-%m-%d");
-  const formatTimeTooltipDate = d3.timeFormat("%b, %Y");
-  const formatGdp = d3.format(",");
+  // const formatTimeDate = d3.timeFormat("%Y-%m-%d");
+  // const formatTimeTooltipDate = d3.timeFormat("%b, %Y");
+  // const formatGdp = d3.format(",");
 
   // Sequential color scale implementation
   const colorScale = d3
     .scaleSequential()
-    .domain([0, d3.max(dataset.data, yValue)])
+    .domain([0, d3.max(data, yValue)])
     .interpolator(d3.interpolateCool);
 
   // Bottom Axis append
@@ -82,14 +68,14 @@ const render = (dataset) => {
     .append("g")
     .attr("id", "x-axis")
     .attr("transform", `translate(0, ${height - margin.bottom})`)
-    .call(customXAxis);
+    .call(xAxis);
 
   // Left Axis append
   svg
     .append("g")
     .attr("id", "y-axis")
-    .attr("transform", `translate(${margin.left},0)`)
-    .call(customYAxis);
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .call(yAxis);
 
   // Left Axis label append
   svg
@@ -98,34 +84,41 @@ const render = (dataset) => {
     .attr("text-anchor", "middle")
     .attr(
       "transform",
-      `translate(${margin.left - 10}, ${height / 2})rotate(-90)`
+      `translate(${margin.left - 40}, ${height / 2})rotate(-90)`
     )
     .text(yAxisLabel)
     .attr("fill", "white");
 
+  // Bottom Axis label append
+  svg
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("text-anchor", "middle")
+    .attr("transform", `translate(${width / 2}, ${height})`)
+    .text(xAxisLabel)
+    .attr("fill", "white");
+
   // Rect (bar) elements append
   svg
-    .selectAll("rect")
-    .data(dataset.data)
+    .selectAll("circle")
+    .data(data)
     .enter()
-    .append("rect")
-    .attr("class", "bar")
-    .attr("data-date", (d) => formatTimeDate(d[0]))
-    .attr("data-gdp", yValue)
-    .attr("x", (d) => xScale(xValue(d)))
-    .attr("y", (d) => yScale(yValue(d)))
-    .attr("width", bandwidth)
-    .attr("height", (d) => yScale(0) - yScale(yValue(d)))
-    .attr("fill", (d) => colorScale(d[1]))
+    .append("circle")
+    .attr("class", "dot")
+    .attr("data-xvalue", xValue)
+    .attr("data-yvalue", (d) => d["Time"].toISOString())
+    .attr("cx", (d) => xScale(xValue(d)))
+    .attr("cy", (d) => yScale(yValue(d)))
+    .attr("r", 5)
+    .attr("fill", "white")
     .on("mouseover", (d) => {
-      let date = formatTimeTooltipDate(d[0]);
-      let gdp = formatGdp(d[1]);
+      let year = formatYear(d["Year"]);
 
       tooltip.transition().duration(200).style("opacity", 0.9);
 
       tooltip
-        .html(`${date}<br />$${gdp} billion`)
-        .attr("data-date", formatTimeDate(d[0]))
+        .html(`${year}`)
+        .attr("data-year", d["Year"])
         .style("left", d3.event.pageX + 20 + "px")
         .style("top", d3.event.pageY + 20 + "px");
     })
