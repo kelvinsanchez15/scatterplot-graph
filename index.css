@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
+  background-color: rgb(190, 190, 190);
+}
+
+a {
+  color: greenyellow;
+  text-decoration: none;
+}
+
+a:visited {
+  color: lightblue;
+  text-decoration: none;
+}
+
+.container {
+  padding: 20px;
+  margin: 20px;
+  min-width: 60%;
+  max-width: 90%;
+  background-color: #311a41;
+  color: white;
+  -webkit-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+}
+
+#title {
+  text-align: center;
+  font-size: 1.5em;
+}
+
+#chart {
+  user-select: none;
+}
+
+.bar:hover {
+  fill: white;
+}
+
+#tooltip {
+  position: absolute;
+  background-color: #311a41;
+  border-radius: 5px;
+  padding: 5px;
+  -webkit-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+}
+
+#info {
+  text-align: end;
+}
+
+text {
+  font-family: "Roboto", sans-serif;
+}
+
+.axis-label {
+  font-size: 0.8em;
+}
