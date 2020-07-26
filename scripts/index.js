@@ -20,12 +20,12 @@ const height = 300;
 const margin = { top: 30, right: 20, bottom: 35, left: 50 };
 
 const svg = d3
-  .select("#chart")
+  .select("#graph")
   .append("svg")
   .attr("viewBox", [0, 0, width, height]);
 
 const tooltip = d3
-  .select("#chart")
+  .select("#graph")
   .append("div")
   .attr("id", "tooltip")
   .style("opacity", 0);
@@ -51,11 +51,6 @@ const render = (data) => {
 
   const yAxis = d3.axisLeft(yScale).tickFormat(formatTime);
   const yAxisLabel = "Time";
-
-  // Time and gdp formatters
-  // const formatTimeDate = d3.timeFormat("%Y-%m-%d");
-  // const formatTimeTooltipDate = d3.timeFormat("%b, %Y");
-  // const formatGdp = d3.format(",");
 
   // Sequential color scale implementation
   const colorScale = d3

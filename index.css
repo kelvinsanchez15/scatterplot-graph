@@ -9,16 +9,6 @@ body {
   background-color: rgb(190, 190, 190);
 }
 
-/* a {
-  color: greenyellow;
-  text-decoration: none;
-}
-
-a:visited {
-  color: lightblue;
-  text-decoration: none;
-} */
-
 .container {
   padding: 20px;
   margin: 20px;
@@ -36,7 +26,7 @@ a:visited {
   font-size: 1.5em;
 }
 
-#chart {
+#graph {
   user-select: none;
 }
 
