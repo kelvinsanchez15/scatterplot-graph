@@ -14,38 +14,45 @@ body {
   margin: 20px;
   min-width: 60%;
   max-width: 90%;
-  background-color: #607d8b;
+  background-color: #002b36;
   color: white;
-  -webkit-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.65);
-  -moz-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.65);
-  box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.65);
+  -webkit-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
 }
 
 #title {
-  text-align: center;
   font-size: 1.5em;
+}
+
+#title,
+#sub-title {
+  text-align: center;
 }
 
 #graph {
   user-select: none;
 }
 
-.bar:hover {
-  fill: white;
+.dot {
+  stroke: black;
+  stroke-opacity: 0.3;
+}
+
+.dot:hover {
+  stroke: black;
+  stroke-opacity: 0.7;
 }
 
 #tooltip {
   position: absolute;
-  background-color: #607d8b;
+  background-color: #465a64;
   border-radius: 5px;
   padding: 5px;
-  -webkit-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.65);
-  -moz-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.65);
-  box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.65);
-}
-
-#legend {
-  text-align: end;
+  pointer-events: none;
+  -webkit-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 49px -6px rgba(0, 0, 0, 0.75);
 }
 
 text {
@@ -53,5 +60,9 @@ text {
 }
 
 .axis-label {
+  font-size: 0.8em;
+}
+
+#legend {
   font-size: 0.8em;
 }

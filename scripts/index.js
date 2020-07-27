@@ -24,12 +24,6 @@ const svg = d3
   .append("svg")
   .attr("viewBox", [0, 0, width, height]);
 
-const tooltip = d3
-  .select("#graph")
-  .append("div")
-  .attr("id", "tooltip")
-  .style("opacity", 0);
-
 // Render function
 const render = (data) => {
   const xValue = (d) => d["Year"];
@@ -42,7 +36,7 @@ const render = (data) => {
 
   const yScale = d3
     .scaleTime()
-    .domain([new Date("1900" + "T00:36:35"), new Date("1900" + "T00:39:50")])
+    .domain([new Date("1900" + "T00:40:00"), new Date("1900" + "T00:36:50")])
     .range([height - margin.bottom, margin.top]);
 
   // Axes setup
@@ -51,12 +45,6 @@ const render = (data) => {
 
   const yAxis = d3.axisLeft(yScale).tickFormat(formatTime);
   const yAxisLabel = "Time";
-
-  // Sequential color scale implementation
-  const colorScale = d3
-    .scaleSequential()
-    .domain([0, d3.max(data, yValue)])
-    .interpolator(d3.interpolateCool);
 
   // Bottom Axis append
   svg
@@ -104,20 +92,64 @@ const render = (data) => {
     .attr("data-yvalue", (d) => d["Time"].toISOString())
     .attr("cx", (d) => xScale(xValue(d)))
     .attr("cy", (d) => yScale(yValue(d)))
-    .attr("r", 5)
-    .attr("fill", "white")
-    .on("mouseover", (d) => {
-      let year = formatYear(d["Year"]);
+    .attr("r", 7)
+    .attr("fill", (d) => (d["Doping"] ? "#ad4231" : "#079672"))
+    .style("fill-opacity", 0.8)
+    .on("mouseover", (d) => tooltipMouseOver(d))
+    .on("mouseout", (d) => tooltipMouseOut(d));
 
-      tooltip.transition().duration(200).style("opacity", 0.9);
+  // Interaction logic
+  const tooltip = d3
+    .select("#graph")
+    .append("div")
+    .attr("id", "tooltip")
+    .style("opacity", 0);
 
-      tooltip
-        .html(`${year}`)
-        .attr("data-year", d["Year"])
-        .style("left", d3.event.pageX + 20 + "px")
-        .style("top", d3.event.pageY + 20 + "px");
-    })
-    .on("mouseout", () => {
-      tooltip.transition().duration(200).style("opacity", 0);
-    });
+  const tooltipMouseOver = (d) => {
+    tooltip.transition().duration(200).style("opacity", 0.9);
+
+    tooltip
+      .html(
+        `${d["Name"]} (${d["Nationality"]})
+        <br />Year: ${formatYear(d["Year"])}, Time: ${formatTime(d["Time"])}`
+      )
+      .attr("data-year", d["Year"])
+      .style("left", d3.event.pageX + 20 + "px")
+      .style("top", d3.event.pageY + 20 + "px");
+  };
+
+  const tooltipMouseOut = () =>
+    tooltip.transition().duration(200).style("opacity", 0);
+
+  // Legend logic
+  const keys = ["Dopping Allegations", "No Dopping Allegations"];
+
+  const color = d3.scaleOrdinal().domain(keys).range(["#ad4231", "#079672"]);
+
+  const size = 10;
+
+  const legend = svg.append("g").attr("id", "legend");
+
+  legend
+    .selectAll("mydots")
+    .data(keys)
+    .enter()
+    .append("rect")
+    .attr("x", 450)
+    .attr("y", (d, i) => margin.top + i * (size + 5))
+    .attr("width", size)
+    .attr("height", size)
+    .style("fill", (d) => color(d));
+
+  legend
+    .selectAll("mylabels")
+    .data(keys)
+    .enter()
+    .append("text")
+    .attr("x", 450 + size * 1.2)
+    .attr("y", (d, i) => margin.top + i * (size + 5) + size / 2)
+    .style("fill", (d) => color(d))
+    .text((d) => d)
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "central");
 };
